@@ -2,17 +2,21 @@ const User = require("../models/user");
 const Entry = require("../models/entry");
 
 exports.userLogin = async function (req, res) {
-
   try {
-    
-    const user = await User.findOne({username: req.body.username});
+    const user = await User.findOne({ username: req.body.username });
+
+    // username does not exist
+    if (!user) res.send("Login failed");
+
+    // verify password
     const valid = user.validatePassword(req.body.password);
-
-    console.log("Valid password?")
-    console.log(valid);
-
-    res.send("user login");
-
+    if (valid) {
+      req.session.loggedIn = true;
+      req.session.username = req.body.username;
+      res.send("Login successful");
+    } else {
+      res.send("Login failed");
+    }
   } catch (error) {
     console.log(error);
     res.status(500).end();
