@@ -1,104 +1,13 @@
-const Entry = require("../models/entry");
-const User = require("../models/user");
+const entryController = require("../controllers/entryController");
+
 const express = require("express");
-const { findByIdAndDelete } = require("../models/user");
 const router = express.Router({ mergeParams: true });
 
-router.get("/", async function (req, res, next) {
-  console.log(req.params.username);
+router.get("/", entryController.entriesGET);
+router.post("/", entryController.entryPOST);
 
-  const dateFrom = new Date(req.query.dateFrom);
-  const dateTo = new Date(req.query.dateTo);
-
-  try {
-    const entries = await User.aggregate([
-      { $project: { entries: 1, _id: 0 } },
-      {
-        $lookup: {
-          from: "entries",
-          localField: "entries",
-          foreignField: "_id",
-          as: "entryId",
-        },
-      },
-      { $unwind: "$entryId" },
-      {
-        $project: {
-          emoji: "$entryId.emoji",
-          log: "$entryId.log",
-          date: "$entryId.date",
-        },
-      },
-      {
-        $match: {
-          date: { $gte: dateFrom, $lte: dateTo },
-        },
-      },
-    ]);
-
-    res.send(entries);
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-router.post("/", async function (req, res, next) {
-  try {
-    const newEntry = new Entry({
-      emoji: req.body.emoji,
-      date: req.body.date,
-      log: req.body.log,
-    });
-
-    const entry = await newEntry.save();
-    await User.updateOne(
-      { username: req.params.username },
-      { $push: { entries: entry._id } }
-    );
-
-    res.status(201).end();
-  } catch (error) {
-    console.log(error);
-    res.status(500).end();
-  }
-});
-
-router.get("/:entryId", async function (req, res, next) {
-  console.log(req.params);
-
-  try {
-    const entry = await Entry.findById(req.params.entryId);
-    res.send(entry);
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-router.put("/:entryId", async function (req, res, next) {
-  try {
-    const updatedEntry = await Entry.findByIdAndUpdate(req.params.entryId, {
-      emoji: req.body.emoji,
-      date: req.body.date,
-      log: req.body.log,
-    });
-    res.send(updatedEntry);
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-router.delete("/:entryId", async function (req, res, next) {
-  try {
-    const deletedEntry = await Entry.findByIdAndDelete(req.params.entryId);
-    await User.updateOne(
-      { username: req.params.username },
-      { $pull: { entries: deletedEntry._id } }
-    );
-    res.status(200).end();
-  } catch (error) {
-    console.log(error);
-    res.status(500).end();
-  }
-});
+router.get("/:entryId", entryController.entryGET);
+router.put("/:entryId", entryController.entryPUT);
+router.delete("/:entryId", entryController.entryDELETE);
 
 module.exports = router;
