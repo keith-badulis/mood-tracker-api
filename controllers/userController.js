@@ -32,6 +32,7 @@ exports.userPOST = async function (req, res) {
       height: req.body.height,
       weight: req.body.weight,
       nickname: req.body.nickname,
+      gender: req.body.gender,
       birthday: new Date(req.body.birthday),
       entries: [],
     });

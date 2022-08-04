@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     lastName: { type: String, default: "" },
     nickname: { type: String, default: "" },
     birthday: { type: Date, default: Date.now },
-    gender: { type: String, enum: ["male", "female"], default: "male" },
+    gender: { type: String, enum: ["Male", "Female"], default: "Male" },
     height: { type: Number, default: 0 },
     weight: { type: Number, default: 0 },
     username: String,
