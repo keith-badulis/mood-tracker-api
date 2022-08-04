@@ -28,27 +28,22 @@ exports.userLogin = async function (req, res) {
 
 exports.userPOST = async function (req, res) {
   try {
-    if (req.session.loggedIn && req.session.username === req.params.username) {
-      const newUser = new User({
-        username: req.body.username,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        height: req.body.height,
-        weight: req.body.weight,
-        nickname: req.body.nickname,
-        gender: req.body.gender,
-        birthday: new Date(req.body.birthday),
-        entries: [],
-      });
-      
-      newUser.setPassword(req.body.password);
-      
-      await newUser.save();
-      
-      res.status(201).end();
-    } else {
-      res.status(401).end();
-    }
+    const newUser = new User({
+      username: req.body.username,
+      nickname: req.body.nickname,
+      entries: [],
+    });
+    newUser.setPassword(req.body.password);
+    await newUser.save();
+
+    req.session.loggedIn = true;
+    req.session.username = req.body.username;
+    res.send({
+      username: user.username,
+      nickname: user.nickname,
+    });
+
+    res.status(201).end();
   } catch (error) {
     console.log(error);
     res.status(500).end();
@@ -95,7 +90,7 @@ exports.userDELETE = async function (req, res) {
       });
       // delete entries of user
       await Entry.deleteMany({ _id: { $in: deletedUser.entries } });
-  
+
       res.status(200).end();
     } else {
       res.status(401).end();
