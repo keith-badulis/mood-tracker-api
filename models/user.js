@@ -3,10 +3,11 @@ const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
   {
-    firstName: String,
-    lastName: String,
-    nickname: String,
-    birthday: Date,
+    firstName: { type: String, default: "" },
+    lastName: { type: String, default: "" },
+    nickname: { type: String, default: "" },
+    birthday: { type: Date, default: Date.now },
+    gender: { type: String, enum: ["male", "female"], default: "male" },
     height: { type: Number, default: 0 },
     weight: { type: Number, default: 0 },
     username: String,
