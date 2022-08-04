@@ -8,6 +8,7 @@ exports.entriesGET = async function (req, res, next) {
 
     try {
       const entries = await User.aggregate([
+        { $match: { username: req.params.username } },
         { $project: { entries: 1, _id: 0 } },
         {
           $lookup: {
@@ -31,6 +32,8 @@ exports.entriesGET = async function (req, res, next) {
           },
         },
       ]);
+
+      console.log(entries);
 
       res.send(entries);
     } catch (error) {

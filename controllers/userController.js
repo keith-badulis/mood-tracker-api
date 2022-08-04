@@ -37,10 +37,10 @@ exports.userPOST = async function (req, res) {
     await newUser.save();
 
     req.session.loggedIn = true;
-    req.session.username = req.body.username;
+    req.session.username = newUser.username;
     res.send({
-      username: user.username,
-      nickname: user.nickname,
+      username: newUser.username,
+      nickname: newUser.nickname,
     });
 
     res.status(201).end();
