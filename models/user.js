@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
     gender: { type: String, enum: ["Male", "Female"], default: "Male" },
     height: { type: Number, default: 0 },
     weight: { type: Number, default: 0 },
-    username: String,
+    username: { type: String, unique: true },
     password: String,
     salt: String,
     entries: [{ type: mongoose.Schema.Types.ObjectId, ref: "Entry" }],
