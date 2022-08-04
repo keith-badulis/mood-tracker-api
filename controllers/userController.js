@@ -6,16 +6,19 @@ exports.userLogin = async function (req, res) {
     const user = await User.findOne({ username: req.body.username });
 
     // username does not exist
-    if (!user) res.send("Login failed");
+    if (!user) res.status(401).end();
 
     // verify password
     const valid = user.validatePassword(req.body.password);
     if (valid) {
       req.session.loggedIn = true;
       req.session.username = req.body.username;
-      res.send("Login successful");
+      res.send({
+        username: user.username, 
+        nickname: user.nickname
+      });
     } else {
-      res.send("Login failed");
+      res.status(401).end();
     }
   } catch (error) {
     console.log(error);
