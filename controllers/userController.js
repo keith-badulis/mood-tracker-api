@@ -26,6 +26,11 @@ exports.userLogin = async function (req, res) {
   }
 };
 
+exports.userLogout = async function (req, res) {
+  req.logout();
+  res.send(401).end();
+};
+
 exports.userPOST = async function (req, res) {
   try {
     const newUser = new User({

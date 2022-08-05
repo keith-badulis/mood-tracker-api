@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 
 router.post("/login", userController.userLogin);
+router.post("/logout", userController.userLogout);
 router.post("/", userController.userPOST);
 router.get("/:username", userController.userGET);
 router.put("/:username", userController.userPUT);
