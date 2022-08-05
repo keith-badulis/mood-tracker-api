@@ -1,7 +1,7 @@
 const User = require("../models/user");
 const Entry = require("../models/entry");
 
-const { v4: uuidv4 } = require('uuid');
+const jwt = require('jsonwebtoken');
 
 exports.userLogin = async function (req, res) {
   try {
@@ -13,17 +13,15 @@ exports.userLogin = async function (req, res) {
     // verify password
     const valid = user.validatePassword(req.body.password);
     if (valid) {
-      // req.session.loggedIn = true;
-      // req.session.username = req.body.username;
+      const token = jwt.sign({
+        data: user.username
+      }, 'secret', { expiresIn: 60 * 60 });
 
-      const uuid = uuidv4();
-      global.tokens[uuid] = new Date().getTime();
-
-      res.header("Authorization", uuid);
+      // u can store tokens sa cookies
       res.send({
         username: user.username,
         nickname: user.nickname,
-        token: uuid,
+        token: token,
       });
     } else {
       res.status(401).end();
