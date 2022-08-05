@@ -1,7 +1,7 @@
-const entryController = require("../controllers/entryController");
-
 const express = require("express");
 const router = express.Router({ mergeParams: true });
+
+const entryController = require("../controllers/entryController");
 
 router.get("/", entryController.entriesGET);
 router.post("/", entryController.entryPOST);
