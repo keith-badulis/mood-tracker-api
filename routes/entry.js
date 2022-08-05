@@ -6,6 +6,8 @@ const router = express.Router({ mergeParams: true });
 router.get("/", entryController.entriesGET);
 router.post("/", entryController.entryPOST);
 
+router.get("/calendarmarks", entryController.entriesCalendarMarksGET)
+
 router.get("/:entryId", entryController.entryGET);
 router.put("/:entryId", entryController.entryPUT);
 router.delete("/:entryId", entryController.entryDELETE);

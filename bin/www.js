@@ -4,6 +4,8 @@
  * Module dependencies.
  */
 
+global.tokens = {}
+
 const app = require("../app");
 const debug = require("debug")("mood-tracker-api:server");
 const http = require("http");

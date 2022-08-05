@@ -1,6 +1,8 @@
 const User = require("../models/user");
 const Entry = require("../models/entry");
 
+const { v4: uuidv4 } = require('uuid');
+
 exports.userLogin = async function (req, res) {
   try {
     const user = await User.findOne({ username: req.body.username });
@@ -11,11 +13,17 @@ exports.userLogin = async function (req, res) {
     // verify password
     const valid = user.validatePassword(req.body.password);
     if (valid) {
-      req.session.loggedIn = true;
-      req.session.username = req.body.username;
+      // req.session.loggedIn = true;
+      // req.session.username = req.body.username;
+
+      const uuid = uuidv4();
+      global.tokens[uuid] = new Date().getTime();
+
+      res.header("Authorization", uuid);
       res.send({
         username: user.username,
         nickname: user.nickname,
+        token: uuid,
       });
     } else {
       res.status(401).end();
@@ -57,12 +65,8 @@ exports.userPOST = async function (req, res) {
 
 exports.userGET = async function (req, res, next) {
   try {
-    if (req.session.loggedIn && req.session.username === req.params.username) {
-      const user = await User.findOne({ username: req.params.username });
-      res.send(user);
-    } else {
-      res.status(401).end();
-    }
+    const user = await User.findOne({ username: req.params.username });
+    res.send(user);
   } catch (error) {
     console.log(error);
     res.status(500).end();
@@ -71,15 +75,11 @@ exports.userGET = async function (req, res, next) {
 
 exports.userPUT = async function (req, res) {
   try {
-    if (req.session.loggedIn && req.session.username === req.params.username) {
-      await User.findOneAndUpdate(
-        { username: req.params.username },
-        { ...req.body }
-      );
-      res.status(200).end();
-    } else {
-      res.status(401).end();
-    }
+    await User.findOneAndUpdate(
+      { username: req.params.username },
+      { ...req.body }
+    );
+    res.status(200).end();
   } catch (error) {
     console.log(error);
     res.status(500).end();
@@ -88,18 +88,14 @@ exports.userPUT = async function (req, res) {
 
 exports.userDELETE = async function (req, res) {
   try {
-    if (req.session.loggedIn && req.session.username === req.params.username) {
-      // delete user
-      const deletedUser = await User.findOneAndDelete({
-        username: req.params.username,
-      });
-      // delete entries of user
-      await Entry.deleteMany({ _id: { $in: deletedUser.entries } });
+    // delete user
+    const deletedUser = await User.findOneAndDelete({
+      username: req.params.username,
+    });
+    // delete entries of user
+    await Entry.deleteMany({ _id: { $in: deletedUser.entries } });
 
-      res.status(200).end();
-    } else {
-      res.status(401).end();
-    }
+    res.status(200).end();
   } catch (error) {
     console.log(error);
     res.status(500).end();
