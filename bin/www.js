@@ -4,25 +4,22 @@
  * Module dependencies.
  */
 
-global.tokens = {}
+global.tokens = {};
 
 const app = require("../app");
 const debug = require("debug")("mood-tracker-api:server");
 const http = require("http");
 const mongoose = require("mongoose");
+require("dotenv").config();
 
-mongoose
-  .connect(
-    "mongodb+srv://root:patssword@cluster0.wkrc0j0.mongodb.net/moodTrackerDB?retryWrites=true&w=majority"
-  )
-  .then(
-    () => {
-      console.log("connected successfully");
-    },
-    (err) => {
-      console.log(err);
-    }
-  );
+mongoose.connect(process.env.MONGODB_URL).then(
+  () => {
+    console.log("connected successfully");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
 
 /**
  * Get port from environment and store in Express.

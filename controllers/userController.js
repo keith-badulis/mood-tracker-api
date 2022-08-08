@@ -15,7 +15,7 @@ exports.userLogin = async function (req, res) {
     if (valid) {
       const token = jwt.sign({
         data: user.username
-      }, 'secret', { expiresIn: 60 * 60 });
+      }, process.env.JWT_SECRET, { expiresIn: 60 * 60 });
 
       // u can store tokens sa cookies
       res.send({
@@ -49,7 +49,7 @@ exports.userPOST = async function (req, res) {
 
     const token = jwt.sign({
       data: newUser.username
-    }, 'secret', { expiresIn: 60 * 60 });
+    }, process.env.JWT_SECRET, { expiresIn: 60 * 60 });
 
     res.send({
       username: newUser.username,
