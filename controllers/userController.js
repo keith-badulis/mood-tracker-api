@@ -47,11 +47,14 @@ exports.userPOST = async function (req, res) {
     newUser.setPassword(req.body.password);
     await newUser.save();
 
-    req.session.loggedIn = true;
-    req.session.username = newUser.username;
+    const token = jwt.sign({
+      data: newUser.username
+    }, 'secret', { expiresIn: 60 * 60 });
+
     res.send({
       username: newUser.username,
       nickname: newUser.nickname,
+      token: token,
     });
 
     res.status(201).end();

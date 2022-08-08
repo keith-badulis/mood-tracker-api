@@ -2,12 +2,9 @@ const jwt = require("jsonwebtoken");
 
 module.exports.validateUser = function (req, res, next) {
   const token = req.headers.authorization;
-  const currTime = new Date().getTime();
-  const tokenCreatedTime = global.tokens[token];
-
+  
   try {
     const decoded = jwt.verify(token, "secret");
-    console.log("valid?")
     next();
   } catch (error) {
     console.log(error);
